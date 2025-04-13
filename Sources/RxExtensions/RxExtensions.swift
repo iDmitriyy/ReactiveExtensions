@@ -21,6 +21,7 @@ extension ObservableType {
   
   public func asInfallibleIgnoringError() -> Infallible<Element> {
     asInfallible { error in
+      // TODO: - log error
 //      logError(ConditionalError(code: .unexpectedCodeEntrance,
 //                                underlyingError: AnyBaseError(error: error)))
       return Infallible<Element>.never()
