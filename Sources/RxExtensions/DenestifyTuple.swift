@@ -5,7 +5,7 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-import RxSwift
+public import RxSwift
 
 // MARK: - Denestify functions
 

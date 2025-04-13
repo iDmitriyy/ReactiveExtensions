@@ -8,42 +8,6 @@
 public import RxCocoa
 public import RxSwift
 
-
-extension ObservableType {
-  public func compactMap<R>() -> Observable<R> where Element == R? {
-    filter { $0 != nil }.map { $0! } // swiftlint:disable:this force_unwrapping
-  }
-  
-  public func filterMap<R>(_ transform: @escaping (Element) -> R?) -> Observable<R> {
-    map(transform).filter { $0 != nil }.map { $0! } // swiftlint:disable:this force_unwrapping
-  }
-}
-
-extension SharedSequenceConvertibleType {
-  public func compactMap<R>() -> RxCocoa.SharedSequence<Self.SharingStrategy, R> where Self.Element == R? {
-    filter { $0 != nil }.map { $0! } // swiftlint:disable:this force_unwrapping
-  }
-  
-  public func filterMap<R>(_ transform: @escaping (Element) -> R?)
-    -> RxCocoa.SharedSequence<Self.SharingStrategy, R> where Self.Element == R? {
-    map(transform).filter { $0 != nil }.map { $0! } // swiftlint:disable:this force_unwrapping
-  }
-}
-
-
-extension ObservableType {
-  public func mapAsVoid() -> Observable<Void> {
-    map { _ in Void() }
-  }
-}
-
-extension SharedSequenceConvertibleType {
-  public func mapAsVoid() -> RxCocoa.SharedSequence<Self.SharingStrategy, Void> {
-    map { _ in Void() }
-  }
-}
-
-
 extension ObservableType {
   public func asSignalIgnoringError() -> Signal<Element> {
     let signal = map { element -> Element? in element }.asSignal(onErrorJustReturn: nil).compactMap()
@@ -64,34 +28,6 @@ extension ObservableType {
   }
 }
 
-extension ObservableType {
-  public func previousAndCurrent() -> Observable<(previous: Element, current: Element)> {
-    let previousAndCurrent = map { element -> Element? in element }
-      .scan(nil) { accumulator, newElement -> (previous: Element, current: Element)? in
-        guard let newElement else {
-//          assertionFailure(error: ConditionalError(code: .unexpectedCodeEntrance))
-          return nil
-        }
-        
-        return if let accumulator {
-          (previous: accumulator.current, current: newElement)
-        } else {
-          (previous: newElement, current: newElement)
-        }
-      }
-      .compactMap()
-    
-    return previousAndCurrent
-  }
-  
-  public static func once(_ element: Self.Element) -> Observable<Self.Element> {
-    Observable<Element>.create { observer -> any Disposable in
-      observer.onNext(element)
-      return Disposables.create()
-    }
-  }
-}
-
 extension ControlEvent<String?> {
   public func orEmpty() -> ControlEvent<String> {
     let event = map { maybeText in maybeText ?? "" }
@@ -107,51 +43,13 @@ extension PublishRelay {
 
 
 extension ObservableType {
-  public func replayLast(waitingFor event: some ObservableType) -> Observable<Element> {
-    let sourceObservable = self
-    let shutter = event.take(prefix: 1) // после того как от signal поступит 1-й элемент – можно пропускать элементы из SO
-    
-    let combined = Observable.combineLatest(sourceObservable, shutter)
-    let resultObservable = combined.map { element, _ in element }
-    return resultObservable
-  }
-  
-  public func replayLastPending<G>(whenGateOpened gateSignal: G) -> Observable<Element> where G: ObservableType,
-    G.Element == Bool {
-    let sourceObservable = self
-    let gate = gateSignal.distinctUntilChanged()
-    
-    let resultSource: Observable<(Self.Element?, Bool)> = Observable
-      .combineLatest(sourceObservable, gate)
-      .scan(mapFirstToAccumulator: { firstElement -> (Element?, Bool) in
-        firstElement
-      }, accumulator: { previous, current -> (Element?, Bool) in
-        let (accumulatedElement, previousGateOpened) = previous
-        let (latestElement, isGateOpened) = current
-        
-        return switch (previousGateOpened, isGateOpened) {
-        case (false, false): (latestElement, isGateOpened)
-        case (true, true): (latestElement, isGateOpened)
-        case (false, true): (accumulatedElement, isGateOpened) // открытие
-        case (true, false): (nil, isGateOpened) // закрытие затвора. В качестве элемента ставим nil, чтобы при
-        }
-      })
-    
-    let resultObservable = resultSource.compactMap { maybeElement, isGateOpened -> Element? in
-      guard isGateOpened else { return nil }
-      return maybeElement
-    }
-    
-    return resultObservable
-  }
-  
   public func waitingWithLatestFrom<S>(_ second: S) -> Observable<(Element, S.Element)> where S: ObservableType {
     let sourceObservable = self
     let secondEvent = second.enumerated()
     
     let result = Observable.combineLatest(sourceObservable, secondEvent)
       .previousAndCurrent()
-      .filterMap { previous, current -> (Element, S.Element)? in
+      .compactMap { previous, current -> (Element, S.Element)? in
         let (_, (previousEventElementIndex, _)) = previous
         let (sourceElement, (eventElementIndex, eventElement)) = current
         
@@ -197,16 +95,6 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == DriverShar
 }
 
 extension ObservableType {
-  public func filterConsecutiveNilValues<R>() -> Observable<R?> where Element == R? {
-    previousAndCurrent().compactMap { previous, current -> R?? in
-      if current == nil, previous == nil {
-        nil
-      } else {
-        current
-      }
-    }
-  }
-  
   public func asHidableViewSignal<R>() -> Signal<R?> where Element == R? {
     filterConsecutiveNilValues().asSignalIgnoringError()
   }
@@ -287,16 +175,6 @@ extension ObservableType {
     scan(into: seed, accumulator: accumulator)
       .startWith(seed)
       .share(replay: 1, scope: .forever)
-  }
-  
-  public func take(prefix count: Int) -> RxSwift.Observable<Self.Element> {
-    if count < 1 {
-      Observable.never()
-    } else {
-      enumerated().flatMapLatest { index, element -> Observable<Element> in
-        index < count ? Observable.just(element) : Observable.never()
-      }
-    }
   }
 }
 
@@ -397,18 +275,6 @@ extension ObservableType {
     }
     
     return (first, second, third, fourth)
-  }
-}
-
-extension ObservableType {
-  public func bifurcate<A, B>(_ predicate: @escaping (Element) throws -> (A, B))
-    -> (Observable<A>, Observable<B>) {
-    let stream = map(predicate).share()
-
-    let roA = stream.map { $0.0 }
-    let roB = stream.map { $0.1 }
-
-    return (roA, roB)
   }
 }
 
