@@ -4,21 +4,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "ReactiveExtensions",
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "ReactiveExtensions",
-            targets: ["ReactiveExtensions"]),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "ReactiveExtensions"),
-        .testTarget(
-            name: "ReactiveExtensionsTests",
-            dependencies: ["ReactiveExtensions"]
-        ),
-    ]
+  name: "ReactiveExtensions",
+  products: [
+    .library(name: "ReactiveExtensions",
+             targets: ["ReactiveExtensions"]),
+        
+    .library(name: "AsyncExtensions", targets: ["AsyncExtensions"]),
+    .library(name: "CombineExtensions", targets: ["CombineExtensions"]),
+    .library(name: "RxExtensions", targets: ["RxExtensions"]),
+  ],
+  targets: [
+    .target(name: "ReactiveExtensions"),
+    .target(name: "AsyncExtensions"),
+    .target(name: "CombineExtensions"),
+    .target(name: "RxExtensions"),
+    
+    .testTarget(name: "ReactiveExtensionsTests", dependencies: ["ReactiveExtensions"]),
+    .testTarget(name: "AsyncExtensionsTests", dependencies: ["AsyncExtensions"]),
+    .testTarget(name: "CombineExtensionsTests", dependencies: ["CombineExtensions"]),
+    .testTarget(name: "RxExtensionsTests", dependencies: ["RxExtensions"]),
+  ]
 )
