@@ -49,9 +49,9 @@ extension ObservableType {
     
     let result = Observable.combineLatest(sourceObservable, secondEvent)
       .previousAndCurrent()
-      .compactMap { previous, current -> (Element, S.Element)? in
-        let (_, (previousEventElementIndex, _)) = previous
-        let (sourceElement, (eventElementIndex, eventElement)) = current
+      .compactMap { accumulator -> (Element, S.Element)? in
+        let (_, (previousEventElementIndex, _)) = accumulator.previous
+        let (sourceElement, (eventElementIndex, eventElement)) = accumulator.current
         
         guard eventElementIndex == previousEventElementIndex || eventElementIndex == 0 else { return nil }
         
