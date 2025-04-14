@@ -7,11 +7,11 @@
 
 extension ObservableType {
   public func filterConsecutiveNilValues<R>() -> Observable<R?> where Element == R? {
-    previousAndCurrent().compactMap { previous, current -> R?? in
-      if current == nil, previous == nil {
+    previousAndCurrent().compactMap { accumulator -> R?? in
+      if accumulator.current == nil, accumulator.previous == nil {
         nil
       } else {
-        current
+        accumulator.current
       }
     }
   }
