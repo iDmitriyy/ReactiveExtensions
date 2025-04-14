@@ -5,26 +5,21 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-import FunctionalTypes
+public import struct FunctionalTypes.PreviousAndCurrent
 
 extension ObservableType {
-  public func previousAndCurrent() -> Observable<(previous: Element, current: Element)> {
+  public func previousAndCurrent() -> Observable<PreviousAndCurrent<Element>> {
     let previousAndCurrent = map { element -> Element? in element }
-      .scan(nil) { accumulator, newElement -> (previous: Element, current: Element)? in
-        guard let newElement else {
-//          assertionFailure(error: ConditionalError(code: .unexpectedCodeEntrance))
-          return nil
-        }
+      .scan(nil) { accumulator, newElement -> PreviousAndCurrent<Element>? in
+        guard let newElement else { return nil }
         
         return if let accumulator {
-          (previous: accumulator.current, current: newElement)
+          accumulator.updated(by: newElement)
         } else {
-          (previous: newElement, current: newElement)
+          PreviousAndCurrent(seed: newElement)
         }
       }
       .compactMap()
-    
     return previousAndCurrent
   }
 }

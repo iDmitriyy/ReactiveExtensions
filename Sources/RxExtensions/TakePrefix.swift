@@ -5,8 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-
 extension ObservableType {
   public func take(prefix count: Int) -> RxSwift.Observable<Self.Element> {
     if count < 1 {

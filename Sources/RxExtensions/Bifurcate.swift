@@ -5,8 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-
 extension ObservableType {
   public func bifurcate<A, B>(_ predicate: @escaping (Element) throws -> (A, B))
     -> (Observable<A>, Observable<B>) {

@@ -5,8 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-
 public protocol HotObservableType<Element>: ObservableType {}
 
 extension ObservableType {

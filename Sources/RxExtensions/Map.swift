@@ -5,9 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxCocoa
-public import RxSwift
-
 extension ObservableType {
   public func compactMap<R>() -> Observable<R> where Element == R? { compactMap { $0 } }
 }

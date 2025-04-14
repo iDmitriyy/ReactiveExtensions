@@ -5,8 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-
 extension ObservableType {
   public func replayLast(waitingFor event: some ObservableType) -> Observable<Element> {
     let sourceObservable = self

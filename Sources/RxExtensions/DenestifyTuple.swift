@@ -5,8 +5,6 @@
 //  Created by Dmitriy Ignatyev on 13.04.2025.
 //
 
-public import RxSwift
-
 // MARK: - Denestify functions
 
 // swiftlint:disable large_tuple
