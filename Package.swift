@@ -22,14 +22,16 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-async-algorithms", .upToNextMajor(from: "1.0.0")),
     .package(url: "https://github.com/CombineCommunity/RxCombine.git", .upToNextMajor(from: "2.0.1")),
-    .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0")),
+    .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0")), //
+    .package(url: "https://github.com/iDmitriyy/SwiftyKit.git", branch: "main")
   ],
   targets: [
     .target(name: "ReactiveExtensions"),
     .target(name: "AsyncExtensions"),
     .target(name: "CombineExtensions"),
     .target(name: "RxExtensions", dependencies: [.product(name: "RxSwift", package: "RxSwift"),
-                                                 .product(name: "RxCocoa", package: "RxSwift")]),
+                                                 .product(name: "RxCocoa", package: "RxSwift"),
+                                                 .product(name: "FunctionalTypes", package: "SwiftyKit")]),
     
     .testTarget(name: "ReactiveExtensionsTests", dependencies: ["ReactiveExtensions"]),
     .testTarget(name: "AsyncExtensionsTests", dependencies: ["AsyncExtensions"]),

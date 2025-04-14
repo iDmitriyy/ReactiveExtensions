@@ -6,6 +6,7 @@
 //
 
 public import RxSwift
+import FunctionalTypes
 
 extension ObservableType {
   public func previousAndCurrent() -> Observable<(previous: Element, current: Element)> {

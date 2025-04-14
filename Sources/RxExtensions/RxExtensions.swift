@@ -7,6 +7,7 @@
 
 public import RxCocoa
 public import RxSwift
+public import FunctionalTypes
 
 extension ObservableType {
   public func asSignalIgnoringError() -> Signal<Element> {
