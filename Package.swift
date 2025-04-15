@@ -23,7 +23,7 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-async-algorithms", .upToNextMajor(from: "1.0.0")),
     .package(url: "https://github.com/CombineCommunity/RxCombine.git", .upToNextMajor(from: "2.0.1")),
     .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.8.0")), //
-    .package(url: "https://github.com/iDmitriyy/SwiftyKit.git", branch: "main")
+    .package(url: "https://github.com/iDmitriyy/SwiftyKit.git", branch: "main"),
   ],
   targets: [
     .target(name: "ReactiveExtensions"),
@@ -48,7 +48,9 @@ let package = Package(
 for target: PackageDescription.Target in package.targets {
   {
     var settings: [PackageDescription.SwiftSetting] = $0 ?? []
+    settings.append(.enableUpcomingFeature("ExistentialAny"))
     settings.append(.enableUpcomingFeature("InternalImportsByDefault"))
+    settings.append(.enableUpcomingFeature("MemberImportVisibility"))
     $0 = settings
   }(&target.swiftSettings)
 }
