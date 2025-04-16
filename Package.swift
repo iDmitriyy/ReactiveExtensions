@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "ReactiveExtensions",
+  name: "reactive-extensions",
   platforms: [
     .iOS(.v17),
     .tvOS(.v17),
