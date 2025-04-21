@@ -5,11 +5,11 @@
 //  Created by Dmitriy Ignatyev on 21.04.2025.
 //
 
+import struct FunctionalTypes.PreviousAndCurrent
+@testable import RxExtensions
 import RxSwift
 import RxTest
 import Testing
-@testable import RxExtensions
-import struct FunctionalTypes.PreviousAndCurrent
 
 struct PreviousAndCurrentTests {
   func testPreviousAndCurrent() {
